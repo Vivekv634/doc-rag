@@ -1,0 +1,28 @@
+/app/data/raw/
+/app/data/processed/
+/app/data/vector/
+
+/app/tests/*.txt
+
+/**/__pycache__
+# Python packaging artifacts
+*.egg-info/
+dist/
+build/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables
+.env
+.env.*
+
+# Test and coverage
+.pytest_cache/
+.coverage
+htmlcov/

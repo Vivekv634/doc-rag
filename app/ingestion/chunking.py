@@ -64,12 +64,12 @@ def recursive_chunking(docs: list[Document]) -> str:
 
 
 if __name__ == "__main__":
-    loaded_docs_list = get_documents("06a41d994973")
+    loaded_docs_list = get_documents("cc0232fa2f55")
     chunk_doc_id = recursive_chunking(loaded_docs_list)
 
     chunks = get_chunks(chunk_doc_id)
 
     print(len(chunks))
 
-    # for i, chunk in enumerate(chunks, start=1):
-    #     print(f"> {i} {chunk}\n\n")
+    for i, chunk in enumerate(chunks, start=1):
+        print(f"> {i} {chunk.metadata}\n\n")

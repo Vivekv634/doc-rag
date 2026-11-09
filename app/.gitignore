@@ -1,7 +1,0 @@
-/data/raw/
-/data/processed/
-/data/vector/
-
-/tests/*.txt
-
-/**/__pycache__

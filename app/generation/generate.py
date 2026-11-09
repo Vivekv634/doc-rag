@@ -1,5 +1,5 @@
 import ollama
-from app.retrival.query_retrival import retrive_embedding
+from app.retrieval.query_retrival import retrieve
 from chromadb.api.types import QueryResult
 from app.utils.constants import CHAT_MODEL
 
@@ -34,7 +34,7 @@ def build_context(docs: QueryResult) -> tuple[str, list[dict[str, str | int]]]:
 
 
 def generate_llm_response(query: str) -> dict[str, str | list[dict[str, str | int]]]:
-    res = retrive_embedding(query)
+    res = retrieve(query)
     context, sources = build_context(res)
 
     response = ollama.chat(  # pyright: ignore[reportUnknownMemberType]

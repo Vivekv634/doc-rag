@@ -5,15 +5,19 @@ from app.embeddings.embed import create_and_save_embeddings
 from app.generation.generate import generate_llm_response
 from app.store.chunk_store import clear_chunks_store
 from app.store.document_store import clear_document_store
-from app.storage.db import clear_vector_db
+from app.vectorstore.chroma import clear_vector_db
 from app.store.store import build_store_dir
+from app.llm.ollama import stop_all_running_models
 
 """
 To run the script with query:
 python3 -m app.main -q <query>
 
 To run the script with file indexing pipeline:
-Python3 -m app.main -f <file1> <file2> ...
+python3 -m app.main -f <file1> <file2> ...
+
+To run the script to reset the database and processed file storage
+python3 -m app.main --delete
 
 """
 
@@ -69,6 +73,8 @@ def main():
         index_pipeline(file_paths)
     elif args.delete:
         delete_all_data()
+
+    stop_all_running_models()
 
 
 if __name__ == "__main__":

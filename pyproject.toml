@@ -37,3 +37,8 @@ include-package-data = true
 where = ["."]
 include = ["app*"]
 exclude = ["app.tests*"]
+
+[tool.pyright]
+reportMissingImports = false
+reportGeneralTypeIssues = "none"
+typeCheckingMode = "off"

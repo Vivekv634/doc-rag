@@ -1,30 +1,30 @@
-import ollama
-from app.retrieval.query_retrival import retrieve
+from app.retrieval.query_retrieval import retrieve
 from chromadb.api.types import QueryResult
-from app.utils.constants import CHAT_MODEL
-
-SYSTEM_PROMPT = """You answer questions using ONLY the numbered context chunks provided.
-Rules:
-- Use only facts stated in the chunks. No background knowledge. Just rephrase it.
-- After each claim, cite the chunk number(s) it came from, like [2] or [1][3].
-- If the context does not fully answer the question, say what is missing."""
+from app.llm.ollama import gen_ollama_model_response
 
 
-def build_context(docs: QueryResult) -> tuple[str, list[dict[str, str | int]]]:
-    documents = docs["documents"]
-    metadatas = docs["metadatas"]
+def build_context(
+    docs: QueryResult,
+):
+    if not docs["metadatas"] or not docs["documents"]:
+        raise ValueError("Insufficient data. Check the retrieval function.")
+
+    documents = docs["documents"][0]
+    metadatas = docs["metadatas"][0]
 
     if not documents or not metadatas:
-        return "", []
+        raise ValueError("Insufficient data. Check the retrieval function.")
 
-    items = sorted(tuple(zip(documents[0], metadatas[0])), key=lambda x: x[1]["chunk_index"])  # type: ignore
+    sorted_items = tuple(
+        sorted(zip(documents, metadatas), key=lambda x: x[1].get("chunk_index"))
+    )
 
     blocks: list[str] = []
-    sources: list[dict[str, str | int]] = []
+    sources: list[dict[str, int | str]] = []
 
-    for i, tp in enumerate(items, start=1):  # type: ignore
+    for i, tp in enumerate(sorted_items, start=1):
         blocks.append(
-            f"[{i}] (source: {tp[1]['source']}, page {tp[1]['page_no']})\n{tp[0].strip()}"  # type: ignore
+            f"[{i}] (source: {tp[1]['source']}, page {tp[1]['page_no']})\n{tp[0].strip()}"
         )
         sources.append(
             {"n": i, "chunk_id": tp[1]["chunk_id"], "page": tp[1]["page_no"]}
@@ -37,14 +37,8 @@ def generate_llm_response(query: str) -> dict[str, str | list[dict[str, str | in
     res = retrieve(query)
     context, sources = build_context(res)
 
-    response = ollama.chat(  # pyright: ignore[reportUnknownMemberType]
-        think=False,
-        model=CHAT_MODEL,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {query}"},
-        ],
-        options={"temperature": 0.2, "seed": 42, "num_ctx": 8192},
+    response = gen_ollama_model_response(
+        messages=f"Context:\n{context}\n\nQuestion: {query}"
     )
 
     return {"answer": response["message"]["content"], "sources": sources}

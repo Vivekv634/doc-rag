@@ -3,7 +3,7 @@ from langchain_core.documents import Document
 from app.utils.constants import DATA_PROCESSED_DIR
 
 
-def get_documents(document_id: str) -> list[Document]:
+def get_processed_documents(document_id: str) -> list[Document]:
     """
     Fetch all the Document objects from the file named as `document_id`.
     """
@@ -27,7 +27,7 @@ def get_documents(document_id: str) -> list[Document]:
     return doc_list
 
 
-def save_document(document: Document):
+def save_processed_document(document: Document):
     """
     Breaks the Document Object into pages and then saves it into file.
     """

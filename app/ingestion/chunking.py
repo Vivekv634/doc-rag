@@ -1,5 +1,6 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from app.store.document_store import get_documents
+from app.utils.constants import CHUNK_OVERLAP, CHUNK_SIZE
+from app.store.document_store import get_processed_documents
 from langchain_core.documents import Document
 from tqdm import tqdm
 from app.store.chunk_store import save_chunks, get_chunks
@@ -26,8 +27,8 @@ def recursive_chunking(docs: list[Document]) -> str:
     full_text = separator.join(parts)
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,
-        chunk_overlap=150,
+        chunk_size=CHUNK_SIZE,
+        chunk_overlap=CHUNK_OVERLAP,
         separators=["\n\n", "\n", ". ", " ", ""],
         add_start_index=True,
     )
@@ -64,7 +65,7 @@ def recursive_chunking(docs: list[Document]) -> str:
 
 
 if __name__ == "__main__":
-    loaded_docs_list = get_documents("cc0232fa2f55")
+    loaded_docs_list = get_processed_documents("4f79d0250b35")
     chunk_doc_id = recursive_chunking(loaded_docs_list)
 
     chunks = get_chunks(chunk_doc_id)

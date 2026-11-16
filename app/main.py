@@ -1,13 +1,15 @@
 import argparse
 from pathlib import Path
 from app.ingestion.pipeline import ingest_pipeline
-from app.embeddings.embed import create_and_save_embeddings
+from app.ingestion.embeddings.embed import create_and_save_embeddings
 from app.generation.generate import generate_llm_response
 from app.store.chunk_store import clear_chunks_store
 from app.store.document_store import clear_document_store
-from app.vectorstore.chroma import clear_vector_db
+from app.ingestion.vectorstore.chroma import clear_vector_db
 from app.store.store import build_store_dir
 from app.llm.ollama import stop_all_running_models
+from multiprocessing import Process
+import queue
 
 """
 To run the script with query:
@@ -23,10 +25,28 @@ python3 -m app.main --delete
 
 
 def index_pipeline(file_paths: list[Path]):
-    file_id_list: list[str] = ingest_pipeline(file_paths)
+    q = queue.Queue()
 
-    for id in file_id_list:
-        create_and_save_embeddings(id)
+    for fp in file_paths:
+        q.put(str(fp))
+
+    while not q.empty():
+        process1 = Process(
+            target=ingest_pipeline, args=(Path(q.get()),), name="Process 1"
+        )
+
+        if not q.empty():
+            process2 = Process(
+                target=ingest_pipeline, args=(Path(q.get()),), name="Process 2"
+            )
+
+        process1.start()
+        process2.start()
+
+        process1.join()
+        process2.join()
+
+        print("\nAll process done!")
 
 
 def generation_pipeline(query: str):

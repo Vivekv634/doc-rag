@@ -117,20 +117,20 @@ def query_documents(
     )
 
 
-# def get_documents(
-#     ids: list[str] | None = None,
-#     where: dict | None = None,
-#     limit: int | None = None,
-#     offset: int = 0,
-# ):
-#     """Retrieve documents by IDs or metadata filters."""
-#     return docs_collection.get(
-#         ids=ids,
-#         where=where,
-#         limit=limit,
-#         offset=offset,
-#         include=["documents", "metadatas", "embeddings"],
-#     )
+def get_documents(
+    ids: list[str] | None = None,
+    where: dict | None = None,
+    limit: int | None = None,
+    offset: int = 0,
+):
+    """Retrieve documents by IDs or metadata filters."""
+    return docs_collection.get(
+        ids=ids,
+        where=where,
+        limit=limit,
+        offset=offset,
+        include=["documents", "metadatas", "embeddings"],
+    )
 
 
 def delete_documents(
@@ -165,7 +165,8 @@ def database_heartbeat():
 
 
 if __name__ == "__main__":
-    print("Heartbeat:", database_heartbeat())
-    print("Collection:", get_collection())
-    # print("Total documents:", count_documents())
-    print("Preview:", peek_documents())
+    # print("Heartbeat:", database_heartbeat())
+    # print("Collection:", get_collection())
+    # # print("Total documents:", count_documents())
+    # print("Preview:", peek_documents())
+    pass

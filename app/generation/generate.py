@@ -1,5 +1,5 @@
 from app.retrieval.query_retrieval import retrieve
-from chromadb.api.types import QueryResult
+from chromadb.api.types import QueryResult, Where
 from app.llm.ollama import gen_ollama_model_response
 
 
@@ -33,8 +33,10 @@ def build_context(
     return "\n\n".join(blocks), sources
 
 
-def generate_llm_response(query: str) -> dict[str, str | list[dict[str, str | int]]]:
-    res = retrieve(query)
+def generate_llm_response(
+    query: str, where: Where | None = None
+) -> dict[str, str | list[dict[str, str | int]]]:
+    res = retrieve(query, where=where)
     context, sources = build_context(res)
 
     response = gen_ollama_model_response(

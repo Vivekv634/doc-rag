@@ -3,6 +3,8 @@
 /app/data/vector/
 
 /app/tests/*.txt
+/app/api/postman
+/app/api/.postman
 
 /**/__pycache__
 # Python packaging artifacts

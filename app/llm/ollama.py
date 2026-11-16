@@ -20,13 +20,14 @@ def gen_ollama_model_response(messages: str) -> ChatResponse:
 
 
 def stop_all_running_models():
-    all_running_models = ollama.ps().models
+    all_running_models = [m.name for m in ollama.ps().models]
     all_models = [EMBED_MODEL, CHAT_MODEL]
     models_stopped = []
+
     for m in all_models:
-        if m.name in all_running_models:
-            ollama.generate(m.name, prompt="", keep_alive=0)
-            models_stopped.append(m.name)
+        if m in all_running_models:
+            ollama.generate(m, prompt="", keep_alive=0)
+            models_stopped.append(m)
     print(f"\nModels stopped: {models_stopped}")
 
 

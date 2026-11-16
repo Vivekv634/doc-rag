@@ -7,23 +7,18 @@ from tqdm import tqdm
 
 
 def pdf_loader(doc_path: Path) -> str:
-    """Loads and saves the document object into the disk for further use.
-
-    Args:
-        doc_path (Path): Path of the pdf file
-
-    Raises:
-        FileNotFoundError: If the file at that path didn't exists
-
-    Returns:
-        str: document_id
-    """
     doc_path = doc_path.resolve()
     if not doc_path.exists():
         raise FileNotFoundError(doc_path)
 
     document_id = getID()
-    loader = PyMuPDFLoader(file_path=str(doc_path))
+    loader = PyMuPDFLoader(
+        file_path=str(doc_path),
+        extract_tables="markdown",
+        mode="page",
+        images_inner_format="text",
+        extract_images=True,
+    )
 
     doc_pages = loader.load()
 

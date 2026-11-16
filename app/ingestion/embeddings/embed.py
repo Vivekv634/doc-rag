@@ -1,6 +1,6 @@
 from tqdm import tqdm
 from app.store.chunk_store import get_chunks
-from app.vectorstore.chroma import add_documents
+from app.ingestion.vectorstore.chroma import add_documents
 from app.llm.ollama import gen_embedding_from_ollama_model
 
 

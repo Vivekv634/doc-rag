@@ -1,6 +1,8 @@
 from app.retrieval.query_retrieval import retrieve
 from chromadb.api.types import QueryResult, Where
-from app.llm.ollama import gen_ollama_model_response
+from app.llm.ollama import gen_ollama_model_response, stop_all_running_models
+from app.utils.constants import EMBED_MODEL
+import sys
 
 
 def build_context(
@@ -34,19 +36,36 @@ def build_context(
 
 
 def generate_llm_response(
-    query: str, where: Where | None = None
+    query: str, where: Where | None = None, model: str | None = None
 ) -> dict[str, str | list[dict[str, str | int]]]:
     res = retrieve(query, where=where)
+
+    print("\nChunks retrived!")
+
+    stop_all_running_models([EMBED_MODEL])
+
     context, sources = build_context(res)
 
     response = gen_ollama_model_response(
-        messages=f"Context:\n{context}\n\nQuestion: {query}"
+        model=model, messages=f"Context:\n{context}\n\nQuestion: {query}"
     )
+
+    print("\nModel responded!")
+
+    stop_all_running_models()
 
     return {"answer": response["message"]["content"], "sources": sources}
 
 
 if __name__ == "__main__":
-    query = input("Query: ")
+    while True:
+        query = input("Your Query: ")
 
-    print(generate_llm_response(query))
+        if query == "/exit":
+            sys.exit(0)
+
+        response = generate_llm_response(query, model="qwen2.5:1.5b-instruct")
+
+        stop_all_running_models()
+        print(response["answer"])
+        print(response)

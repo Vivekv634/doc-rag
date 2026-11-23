@@ -8,6 +8,7 @@ from chromadb.api.types import (
     QueryResult,
     WhereDocument,
     OneOrMany,
+    Include,
 )
 
 from app.utils.constants import VECTOR_DIR
@@ -74,36 +75,6 @@ def add_documents(
     )
 
 
-# def upsert_documents(
-#     ids: list[str],
-#     documents: list[str],
-#     embeddings: list[list[float]] | None = None,
-#     metadatas: list[dict] | None = None,
-# ):
-#     """Insert documents or update existing documents."""
-#     docs_collection.upsert(
-#         ids=ids,
-#         documents=documents,
-#         embeddings=embeddings,
-#         metadatas=metadatas,
-#     )
-
-
-# def update_documents(
-#     ids: list[str],
-#     documents: list[str] | None = None,
-#     embeddings: list[list[float]] | None = None,
-#     metadatas: list[dict] | None = None,
-# ):
-#     """Update existing documents."""
-#     docs_collection.update(
-#         ids=ids,
-#         documents=documents,
-#         embeddings=embeddings,
-#         metadatas=metadatas,
-#     )
-
-
 def query_documents(
     query_embeddings: list[float],
     n_results: int = 5,
@@ -122,14 +93,16 @@ def get_documents(
     where: dict | None = None,
     limit: int | None = None,
     offset: int = 0,
+    include: Include | None = ["documents", "metadatas", "embeddings"],
 ):
     """Retrieve documents by IDs or metadata filters."""
+    print(f"Include: {include}")
     return docs_collection.get(
         ids=ids,
         where=where,
         limit=limit,
         offset=offset,
-        include=["documents", "metadatas", "embeddings"],
+        include=include or ["documents", "metadatas", "embeddings"],
     )
 
 
@@ -164,9 +137,25 @@ def database_heartbeat():
     return db_client.heartbeat()
 
 
+def get_all_unique_docs():
+    result = docs_collection.get(include=["metadatas"])
+    unique_ids: set[Metadata] = set()
+    unique_metadatas: list[Metadata] = []
+    for metadata in result.get("metadatas"):
+        if metadata["document_id"] not in unique_ids:
+            unique_ids.add(metadata["document_id"])
+            unique_metadatas.append(metadata)
+
+    return unique_metadatas
+
+
 if __name__ == "__main__":
-    # print("Heartbeat:", database_heartbeat())
-    # print("Collection:", get_collection())
-    # # print("Total documents:", count_documents())
-    # print("Preview:", peek_documents())
+    # print(get_all_unique_docs())
+    # get_all_unique_doc_ids()
+
+    docs = get_documents(
+        ids=["89119b4153b4-2", "b3181036717b-12", "b3181036717b-14"],
+        include=["documents", "metadatas"],
+    )
+    print(docs)
     pass

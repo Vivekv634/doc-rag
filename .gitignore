@@ -6,6 +6,8 @@
 /app/api/postman
 /app/api/.postman
 
+/TODOS.md
+
 /**/__pycache__
 # Python packaging artifacts
 *.egg-info/

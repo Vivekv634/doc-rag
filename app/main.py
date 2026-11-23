@@ -1,13 +1,11 @@
 import argparse
 from pathlib import Path
 from app.ingestion.pipeline import ingest_pipeline
-from app.ingestion.embeddings.embed import create_and_save_embeddings
 from app.generation.generate import generate_llm_response
 from app.store.chunk_store import clear_chunks_store
 from app.store.document_store import clear_document_store
 from app.ingestion.vectorstore.chroma import clear_vector_db
 from app.store.store import build_store_dir
-from app.llm.ollama import stop_all_running_models
 from multiprocessing import Process
 import queue
 
@@ -93,8 +91,6 @@ def main():
         index_pipeline(file_paths)
     elif args.delete:
         delete_all_data()
-
-    stop_all_running_models()
 
 
 if __name__ == "__main__":

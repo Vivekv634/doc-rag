@@ -3,6 +3,12 @@ from chromadb.api.types import QueryResult, Where
 from app.llm.ollama import gen_ollama_model_response, stop_all_running_models
 from app.utils.constants import EMBED_MODEL
 import sys
+from pydantic import BaseModel
+
+
+class LLMResponse(BaseModel):
+    answer: str
+    sources: list[dict[str, str | int]]
 
 
 def build_context(
@@ -37,7 +43,7 @@ def build_context(
 
 def generate_llm_response(
     query: str, where: Where | None = None, model: str | None = None
-) -> dict[str, str | list[dict[str, str | int]]]:
+) -> LLMResponse:
     res = retrieve(query, where=where)
 
     print("\nChunks retrived!")

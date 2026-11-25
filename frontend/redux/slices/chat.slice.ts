@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface UserChatMessage {
   id: string;
   role: "user";
+  timestamp: string;
   content: {
     model: string;
     document_ids: string[];
@@ -13,6 +14,7 @@ export interface UserChatMessage {
 export interface AssistantChatMessage {
   id: string;
   role: "assistant";
+  timestamp: string;
   content: {
     answer: string;
     sources: object;

@@ -11,6 +11,10 @@ from chromadb.api.types import Where
 from app.llm.ollama import stop_all_running_models, get_all_models
 from app.ingestion.vectorstore.chroma import get_all_unique_docs, get_documents, Include
 from pydantic import BaseModel
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 class ChunkRetreivalRequestBody(BaseModel):
@@ -26,13 +30,15 @@ class SearchRequestBody(BaseModel):
 
 app = FastAPI()
 
+allow_origins = [
+    "http://localhost:3000",
+    f"http://{os.getenv('NEXT_PUBLIC_IP')}:3000",
+    f"http://{os.getenv('NEXT_PUBLIC_IP')}:8000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://192.168.0.102:3000",
-        "http://192.168.0.102:8000",
-    ],
+    allow_origins=[],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -62,6 +68,8 @@ async def user_query(request: SearchRequestBody):
     response = generate_llm_response(
         query=request.query, where=where, model=request.model
     )
+
+    stop_all_running_models()
 
     return {"response": response}
 

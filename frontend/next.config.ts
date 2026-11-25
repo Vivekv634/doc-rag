@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
-  allowedDevOrigins: ["192.168.0.102"],
+  allowedDevOrigins: [`${process.env.NEXT_PUBLIC_IP}`],
   turbopack: {
     rules: {
       "*.css": {
@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:path*",
-        destination: "http://192.168.0.102:8000/:path*",
+        destination: `http://${process.env.NEXT_PUBLIC_IP}:8000/:path*`,
       },
     ];
   },

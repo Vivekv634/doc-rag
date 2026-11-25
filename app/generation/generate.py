@@ -1,7 +1,7 @@
 from app.retrieval.query_retrieval import retrieve
 from chromadb.api.types import QueryResult, Where
 from app.llm.ollama import gen_ollama_model_response, stop_all_running_models
-from app.utils.constants import EMBED_MODEL
+from app.utils.constants import EMBED_MODEL, CHAT_MODEL
 import sys
 from pydantic import BaseModel
 
@@ -58,7 +58,7 @@ def generate_llm_response(
 
     print("\nModel responded!")
 
-    stop_all_running_models()
+    stop_all_running_models([CHAT_MODEL])
 
     return {"answer": response["message"]["content"], "sources": sources}
 

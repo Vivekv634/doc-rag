@@ -16,20 +16,14 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 const data = {
-  navMain: [
+  items: [
     {
-      title: "Pages",
-      url: "#",
-      items: [
-        {
-          title: "Query",
-          url: "/",
-        },
-        {
-          title: "Upload files",
-          url: "/upload",
-        },
-      ],
+      title: "Query",
+      url: "/",
+    },
+    {
+      title: "Upload files",
+      url: "/upload",
     },
   ],
 };
@@ -38,27 +32,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   return (
     <Sidebar {...props}>
-      <SidebarHeader></SidebarHeader>
+      <SidebarHeader className="border-b min-h-18.25 flex items-center justify-center">
+        <h1 className="text-xl font-bold">Doc-RAG</h1>
+      </SidebarHeader>
       <SidebarContent>
-        {data.navMain.map((item) => (
-          <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {item.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      isActive={pathname == item.url}
-                      render={<Link href={item.url} />}
-                    >
-                      {item.title}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        <SidebarGroup>
+          <SidebarGroupLabel>Pages</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {data.items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    isActive={pathname == item.url}
+                    render={<Link href={item.url} />}
+                  >
+                    {item.title}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

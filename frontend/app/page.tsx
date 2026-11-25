@@ -1,16 +1,9 @@
 "use client";
 import RenderBubbles from "@/components/chat-bubble";
+import LLMSelector from "@/components/llm-selector";
+import QueryDropdown from "@/components/query-dropdown";
 import QueryFilterComponent from "@/components/query-filter";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectTrigger,
-  SelectItem,
-  SelectValue,
-  SelectGroup,
-  SelectLabel,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { fetchAllModels } from "@/redux/features/filters.features";
 import { generateLLMResponse } from "@/redux/features/query.feature";
@@ -19,7 +12,7 @@ import {
   AssistantChatMessage,
   UserChatMessage,
 } from "@/redux/slices/chat.slice";
-import { setModel, setQuery } from "@/redux/slices/query.slice";
+import { setQuery } from "@/redux/slices/query.slice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { cn } from "cn";
 import { Loader2, Send } from "lucide-react";
@@ -31,7 +24,6 @@ export default function Home() {
   const [textQuery, setTextQuery] = useState<string>("");
 
   const [filterDialogState, setFilterDialogState] = useState<boolean>(false);
-  const { models } = useSelector((state: RootState) => state.filters);
   const { responseLoadingState, query, documents, model } = useSelector(
     (state: RootState) => state.query,
   );
@@ -43,6 +35,7 @@ export default function Home() {
 
     // append user message to chat message list
     const user_msg: UserChatMessage = {
+      timestamp: new Date().toISOString(),
       content: { model: model, document_ids: document_ids, query: query },
       id: uid(),
       role: "user",
@@ -57,6 +50,7 @@ export default function Home() {
       const assistant_msg: AssistantChatMessage = {
         id: uid(),
         role: "assistant",
+        timestamp: new Date().toISOString(),
         content: dispatchResponse.payload as {
           answer: string;
           sources: object;
@@ -97,38 +91,18 @@ export default function Home() {
           />
           <div className="flex justify-between">
             <div className="flex gap-2">
-              <Select
-                onValueChange={(e) => {
-                  dispatch(setModel(e as string));
-                }}
-                value={model}
-              >
-                <SelectTrigger className={cn("min-w-24 max-h-fit bg-white")}>
-                  <SelectValue placeholder="Choose LLM" />
-                </SelectTrigger>
-                <SelectContent className={"min-w-fit"}>
-                  <SelectGroup>
-                    <SelectLabel>LLMs</SelectLabel>
-                    {models.map((m, i) => {
-                      return (
-                        <SelectItem key={i} value={m}>
-                          {m}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <LLMSelector />
               <Button
                 variant={"outline"}
                 onClick={() => setFilterDialogState(true)}
               >
-                <span className="tracking-wide">filter</span>
+                <span className="tracking-wide cursor-pointer">filter</span>
               </Button>
             </div>
             <Button
+              className={"cursor-pointer"}
               onClick={() => fetchResponse()}
-              disabled={responseLoadingState}
+              disabled={responseLoadingState || !model || !textQuery.trim()}
             >
               {responseLoadingState ? (
                 <Loader2 className="animate-spin" />
@@ -144,6 +118,8 @@ export default function Home() {
         state={filterDialogState}
         onStateChange={setFilterDialogState}
       />
+
+      <QueryDropdown />
     </main>
   );
 }

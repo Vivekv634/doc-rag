@@ -18,7 +18,12 @@ function BubbleMessageAction({ chat }: { chat: ChatMessage }) {
 
   return (
     <ButtonGroup>
-      <Button onClick={copyText} variant={"ghost"} size={"icon-sm"}>
+      <Button
+        onClick={copyText}
+        variant={"ghost"}
+        size={"icon-sm"}
+        className={"cursor-pointer"}
+      >
         <CopyIcon />
       </Button>
     </ButtonGroup>
@@ -32,15 +37,27 @@ export default function RenderBubbles({ chats }: { chats: ChatMessage[] }) {
         if (chat.role == "user") {
           return (
             <Bubble key={i} align="end" variant={"tinted"}>
-              <BubbleContent>{chat.content.query}</BubbleContent>
-              <BubbleMessageAction chat={chat} />
+              <BubbleContent className="bg-blue-600">
+                {chat.content.query}
+              </BubbleContent>
+              <div className="flex justify-between">
+                <BubbleMessageAction chat={chat} />
+                <span className="text-accent-foreground/60 text-xs my-auto">
+                  {new Date(chat.timestamp).toLocaleString()}
+                </span>
+              </div>
             </Bubble>
           );
         } else if (chat.role == "assistant") {
           return (
             <Bubble key={i} variant={"secondary"}>
               <BubbleContent>{chat.content.answer}</BubbleContent>
-              <BubbleMessageAction chat={chat} />
+              <div className="flex justify-between">
+                <BubbleMessageAction chat={chat} />
+                <span className="text-accent-foreground/60 text-xs my-auto">
+                  {new Date(chat.timestamp).toLocaleString()}
+                </span>
+              </div>
             </Bubble>
           );
         }

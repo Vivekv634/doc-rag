@@ -8,6 +8,9 @@ STORAGE_DIR = APP_DIR / "storage"
 VECTOR_DIR = APP_DIR / "data" / "vector"
 TEST_DIR = APP_DIR / "tests"
 
+ROOT = Path(__file__).resolve().parents[2]
+ENV_PATH = ROOT / ".env.local"
+
 # model constants
 EMBED_MODEL = "embeddinggemma-2:440m"
 CHAT_MODEL = "nemotron-3-nano:4b"
@@ -63,4 +66,5 @@ You are a Retrieval-Augmented Generation (RAG) assistant. Answer the user's ques
 
 
 if __name__ == "__main__":
-    print(APP_DIR)
+    # print(APP_DIR)
+    print(Path.exists(ENV_PATH))

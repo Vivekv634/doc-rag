@@ -58,7 +58,7 @@ def generate_llm_response(
 
     print("\nModel responded!")
 
-    stop_all_running_models([CHAT_MODEL])
+    stop_all_running_models([model or CHAT_MODEL])
 
     return {"answer": response["message"]["content"], "sources": sources}
 

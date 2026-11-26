@@ -5,6 +5,7 @@ import QueryDropdown from "@/components/query-dropdown";
 import QueryFilterComponent from "@/components/query-filter";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/toast";
 import { fetchAllModels } from "@/redux/features/filters.features";
 import { generateLLMResponse } from "@/redux/features/query.feature";
 import {
@@ -14,7 +15,6 @@ import {
 } from "@/redux/slices/chat.slice";
 import { setQuery } from "@/redux/slices/query.slice";
 import { AppDispatch, RootState } from "@/redux/store";
-import { cn } from "cn";
 import { Loader2, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,6 +42,9 @@ export default function Home() {
     };
     dispatch(appendMessage(user_msg));
 
+    setTextQuery("");
+    dispatch(setQuery(""));
+
     const dispatchResponse = await dispatch(
       generateLLMResponse({ query, document_ids, model }),
     );
@@ -51,13 +54,14 @@ export default function Home() {
         id: uid(),
         role: "assistant",
         timestamp: new Date().toISOString(),
-        content: dispatchResponse.payload as {
-          answer: string;
-          sources: object;
-        },
+        content: dispatchResponse.payload as AssistantChatMessage["content"],
       };
       dispatch(appendMessage(assistant_msg));
       setTextQuery("");
+    } else if (dispatchResponse.meta.requestStatus == "rejected") {
+      toast.add({ description: dispatchResponse.payload as string });
+      setTextQuery(user_msg.content.query);
+      dispatch(setQuery(user_msg.content.query));
     }
   }
 
@@ -77,12 +81,12 @@ export default function Home() {
 
   return (
     <main className="w-full flex flex-col">
-      <section className="min-h-4/12 w-full lg:w-2xl mx-auto overflow-y-auto pb-56">
+      <section className="min-h-4/12 w-full md:w-2xl mx-auto overflow-y-auto overflow-x-hidden pb-56 px-2">
         <RenderBubbles chats={chat} />
       </section>
 
-      <section className="fixed md:absolute bottom-0 inset-x-0 mx-auto z-10 bg-white">
-        <div className="shrink-0 w-full lg:w-2xl mx-auto pb-2">
+      <section className="fixed md:absolute bottom-0 inset-x-0 mx-auto z-10 bg-white px-2">
+        <div className="shrink-0 w-full md:w-2xl mx-auto pb-2">
           <Textarea
             className="w-full min-h-20 bg-white max-h-56 resize-none mb-1 field-sizing-content"
             placeholder="Write your query..."

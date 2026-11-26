@@ -19,14 +19,19 @@ export const generateLLMResponse = createAsyncThunk<
       });
 
       if (!apiResponse.ok) {
-        return thunkAPI.rejectWithValue(apiResponse.json());
+        const body = await apiResponse.json().catch(() => null);
+        return thunkAPI.rejectWithValue(
+          body?.detail ?? `Request failed (${apiResponse.status})`,
+        );
       }
       const data = await apiResponse.json();
 
       return data.response as { answer: string; sources: object };
     } catch (error) {
       console.error(error as string);
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(
+        error instanceof Error ? error.message : String(error),
+      );
     }
   },
 );

@@ -17,7 +17,11 @@ export interface AssistantChatMessage {
   timestamp: string;
   content: {
     answer: string;
-    sources: object;
+    sources: {
+      n: number;
+      chunk_id: string;
+      page: number;
+    }[];
   };
 }
 

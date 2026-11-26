@@ -30,7 +30,11 @@ def gen_ollama_model_response(messages: str, model: str | None) -> ChatResponse:
 
 def stop_all_running_models(all_models: list[str] | None = [EMBED_MODEL, CHAT_MODEL]):
     all_running_models = [m.name for m in ollama.ps().models]
-    all_models = [EMBED_MODEL, CHAT_MODEL] if all_models is None else all_models
+    all_models = (
+        [EMBED_MODEL, CHAT_MODEL]
+        if all_models is None or len(all_models) == 0
+        else all_models
+    )
     models_stopped = []
 
     for m in all_models:
